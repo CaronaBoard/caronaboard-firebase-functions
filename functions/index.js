@@ -5,12 +5,22 @@ const admin = require("firebase-admin");
 admin.initializeApp(functions.config().firebase);
 
 exports.sendRideRequestNotification = functions.database
-  .ref("/ridesRequests/{rideId}/{toUserId}/{fromUserId}/{rideRequestId}")
+  .ref(
+    "/ridesRequests/{groupId}/{rideId}/{toUserId}/{fromUserId}/{rideRequestId}"
+  )
   .onWrite(event => {
-    const { rideId, toUserId, fromUserId, rideRequestId } = event.params;
+    const {
+      groupId,
+      rideId,
+      toUserId,
+      fromUserId,
+      rideRequestId
+    } = event.params;
 
     console.log(
-      "New ridesRequests for the ride:",
+      "New ridesRequests for the group:",
+      groupId,
+      "for ride:",
       rideId,
       "for user:",
       fromUserId,
@@ -38,7 +48,7 @@ exports.sendRideRequestNotification = functions.database
           title: "Pedido de carona",
           body: `${fromName} te pediu uma carona, clique para saber mais`,
           icon: "https://caronaboard.com/static/images/notification-icon.png",
-          click_action: `https://caronaboard.com/#/ride-request/${rideId}/${fromUserId}/${rideRequestId}`
+          click_action: `https://caronaboard.com/#/groups/${groupId}/rides/${rideId}/requests/${fromUserId}/${rideRequestId}`
         }
       };
 
