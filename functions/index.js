@@ -61,6 +61,43 @@ exports.sendRideRequestNotification = functions.database
     );
   });
 
+exports.sendJoinedGroupNotification = functions.database
+  .ref("/groups/{groupId}/members/{userId}")
+  .onWrite(event => {
+    const { groupId, userId } = event.params;
+    console.log("New member on the group:", groupId, "user:", userId);
+
+    const getUserPromise = admin
+      .database()
+      .ref(`/users/${userId}`)
+      .once("value");
+
+    const getGroupPromise = admin
+      .database()
+      .ref(`/groups/${groupId}`)
+      .once("value");
+
+    return Promise.all([getUserPromise, getGroupPromise]).then(
+      ([user, group]) => {
+        const groupName = group.val().name;
+
+        const payload = {
+          notification: {
+            title: "Pedido de carona",
+            body: `Você foi adicionado ao grupo ${groupName}`,
+            icon: "https://caronaboard.com/static/images/notification-icon.png",
+            click_action: `https://caronaboard.com/#/groups/${groupId}`
+          }
+        };
+        const tokens = [user.val().notificationToken];
+        return admin
+          .messaging()
+          .sendToDevice(tokens, payload)
+          .then(clearTokenOnFail(tokens, [userId]));
+      }
+    );
+  });
+
 exports.sendJoinGroupRequestNotification = functions.database
   .ref("/joinGroupRequests/{groupId}/{fromUserId}/profile")
   .onWrite(event => {
