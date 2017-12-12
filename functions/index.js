@@ -83,8 +83,8 @@ exports.sendJoinedGroupNotification = functions.database
 
         const payload = {
           notification: {
-            title: "Pedido de carona",
-            body: `Você foi adicionado ao grupo ${groupName}`,
+            title: "Adicionado ao grupo",
+            body: `Você foi adicionado em ${groupName}`,
             icon: "https://caronaboard.com/static/images/notification-icon.png",
             click_action: `https://caronaboard.com/#/groups/${groupId}`
           }
@@ -128,7 +128,7 @@ exports.sendJoinGroupRequestNotification = functions.database
         const payload = {
           notification: {
             title: "Pedido para entrar no grupo",
-            body: `${fromName} te pediu uma carona, clique para saber mais`,
+            body: `${fromName} está aguardando autorização`,
             icon: "https://caronaboard.com/static/images/notification-icon.png",
             click_action: `https://caronaboard.com/#/groups/${groupId}`
           }
